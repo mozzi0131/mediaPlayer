@@ -4,22 +4,8 @@
 
 #include "pipeline/pipeline.hpp"
 
-int main(){
-  GThread *thread1 = StartThread(pipe1, "https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_cropped_multilingual.webm");
-  GThread *thread2 = StartThread(pipe2, "http://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.ogv");
-  
-  // 이런 식으로.. 사용하는 게 아닌거같은데 ㅋㅋㅋ ㅠㅠ
-  pipe1->Play();
-  pipe2->Play();
-
-  StopThread(pipe1, thread1);
-  StopThread(pipe2, thread2);
-
-  return 0;
-}
-
 static gpointer loop_func(gpointer data){
-  Pipeline *pipe = static_cast<Pipeline>(data);
+  Pipeline *pipe = static_cast<Pipeline *>(data);
 
   g_main_loop_run(pipe->loop);
 
@@ -36,7 +22,7 @@ static GThread* StartThread(Pipeline *pipe,
   pipe->loop = g_main_loop_new(context, FALSE);
   g_main_context_unref(context);
 
-  return g_thread_new(loop_func, pipe, TRUE, nullptr);
+  return g_thread_new(nullptr, loop_func, pipe);
 }
 
 static void StopThread(Pipeline *pipe, GThread *thread){
@@ -46,4 +32,22 @@ static void StopThread(Pipeline *pipe, GThread *thread){
   g_main_loop_quit(pipe->loop);
   g_thread_join(thread);
   g_main_loop_unref(pipe->loop);
+}
+
+int main(){
+  Pipeline *pipe1 = nullptr;
+  Pipeline *pipe2 = nullptr;
+  
+  
+  GThread *thread1 = StartThread(pipe1, "https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_cropped_multilingual.webm");
+  GThread *thread2 = StartThread(pipe2, "http://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.ogv");
+  
+  // 이런 식으로.. 사용하는 게 아닌거같은데 ㅋㅋㅋ ㅠㅠ
+  pipe1->Play();
+  pipe2->Play();
+
+  StopThread(pipe1, thread1);
+  StopThread(pipe2, thread2);
+
+  return 0;
 }

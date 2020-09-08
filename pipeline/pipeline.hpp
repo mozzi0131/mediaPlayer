@@ -1,4 +1,4 @@
-#ifndef _PIPELINE__
+#ifndef __PIPELINE__
 #define __PIPELINE__
 
 #include <gst/gst.h>
@@ -12,11 +12,11 @@ class Pipeline {
     bool CreatePipeline(const std::string &path="");
     void Play();
     void Pause();
-    void Seek(guint32_t pos);
+    void Seek(int32_t pos);
     void SetPlaybackRate(gdouble rate);
     void ChangeAudioCodec(const std::string &codec);
     void ChangeVideoCodec(const std::string &codec);
-    guint32_t Position();
+    int32_t Position();
 
   private:
     void SetAppSrcCaps(const std::string &type,
@@ -32,8 +32,6 @@ class Pipeline {
     GstElement *videobin;
     GstElement *audiosink;
     GstElement *videosink;
-}
-
-
+};
 
 #endif //PIPELINE

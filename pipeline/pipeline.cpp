@@ -1,7 +1,11 @@
 #include "pipeline.hpp"
 
+#include <gst/app/gstappsrc.h>
+
 namespace {
-  GstFlowReturn pad_added_cb(){;}
+  void GetVideoCaps(GstCaps **caps){;}
+  void GetAudioCaps(GstCaps **caps){;}
+  GstFlowReturn pad_added_cb(){ return GST_FLOW_OK;}
 
 } // namespace
 
@@ -51,12 +55,14 @@ void Pipeline::Pause(){
 void Pipeline::SetAppSrcCaps(const std::string &type,
                              const std::string &codec) {
   GstCaps *caps = nullptr;
-  if(typename == "video"){
-    getVideoCaps(curVideoCodec, &caps);
-    gst_app_src_set_caps(GST_APP_SRC(videoSrc));
+  // unique_ptr로 널리 쓰이는 local info 관리하는 게 나을듯?
+  if(type == "video"){
+    GetVideoCaps(&caps);
+    gst_app_src_set_caps(GST_APP_SRC(videosrc), caps);
   }
-  else if(typename == "audio"){
-    getAudioCaps(curAudioCodec, &caps);
-    gst_app_src_set_caps(GST_APP_SRC(audioSrc));
-  }  
+  else if(type == "audio"){
+    GetAudioCaps(&caps);
+    gst_app_src_set_caps(GST_APP_SRC(audiosrc), caps);
+  }
+  gst_caps_unref(caps);
 }
