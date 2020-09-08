@@ -9,28 +9,29 @@ class Pipeline {
     Pipeline();
     ~Pipeline();
 
-    void createPipeline();
+    bool CreatePipeline(const std::string &path="");
     void Play();
     void Pause();
     void Seek(guint32_t pos);
     void SetPlaybackRate(gdouble rate);
-    void changeAudioCodec(const std::string &codec="");
-    void changeVideoCodec(const std::string &codec="");
-
+    void ChangeAudioCodec(const std::string &codec);
+    void ChangeVideoCodec(const std::string &codec);
     guint32_t Position();
 
   private:
-    void setAppSrcCaps(const std::string &type,
+    void SetAppSrcCaps(const std::string &type,
                        const std::string &codecname);
 
+  public:
+    GMainLoop *loop;
   private:
     GstElement *pipeline;
-    GstElement *audioSrc;
-    GstElement *videoSrc;
-    GstElement *audioBin;
-    GstElement *videoBin;
-    GstElement *audioSink;
-    GstElement *videoSink;
+    GstElement *audiosrc;
+    GstElement *videosrc;
+    GstElement *audiobin;
+    GstElement *videobin;
+    GstElement *audiosink;
+    GstElement *videosink;
 }
 
 

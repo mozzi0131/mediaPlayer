@@ -5,22 +5,26 @@ namespace {
 
 } // namespace
 
-void Pipeline ()
-  : pipeline(nullptr),
-    audioSrc(nullptr),
-    videoSrc(nullptr),
-    audioBin(nullptr),
-    videoBin(nullptr),
-    audioSink(nullptr),
-    videoSink(nullptr) {}
+Pipeline::Pipeline ()
+  : loop(nullptr),
+    pipeline(nullptr),
+    audiosrc(nullptr),
+    videosrc(nullptr),
+    audiobin(nullptr),
+    videobin(nullptr),
+    audiosink(nullptr),
+    videosink(nullptr) {}
 
-bool Pipeline::createPipeline(){
+Pipeline::~Pipeline(){
+  if(pipeline) gst_object_unref(pipeline);
+}
+
+bool Pipeline::CreatePipeline(const std::string &uri){
 
   pipeline = gst_element_factory_make("playbin", "media-player");
   if(!pipeline) return false;
 
-  // set the uri for the playing? or just set the appsrc
-  // return
+  g_object_set(pipeline, "uri", uri.c_str(), nullptr);
 
   /* TODO : change the pipeline to create dynamically */
   // pipeline = gst_pipeline_new("media-player");
@@ -36,7 +40,15 @@ bool Pipeline::createPipeline(){
   return true;
 }
 
-void Pipeline::setAppSrcCaps(const std::string &type,
+void Pipeline::Play(){
+  gst_element_set_state(pipeline, GST_STATE_PLAYING);
+}
+
+void Pipeline::Pause(){
+  gst_element_set_state(pipeline, GST_STATE_PAUSED);
+}
+
+void Pipeline::SetAppSrcCaps(const std::string &type,
                              const std::string &codec) {
   GstCaps *caps = nullptr;
   if(typename == "video"){
